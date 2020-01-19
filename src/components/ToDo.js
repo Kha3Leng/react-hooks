@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 
 const ToDo = (props) => {
-    const inputState = useState('');
+    const [todoName, setTodoName] = useState('');
+    const [todoList, setTodoList] = useState([]);
 
     const inputHandler = event => {
-        inputState[1](event.target.value);
+        setTodoName(event.target.value);
+    };
+
+    const todoListHandler = _ => {
+        setTodoList(todoList.concat(todoName));
     };
 
     return (
         <div>
-            <input type='text' placeholder="To Do" onChange={inputHandler} value={inputState[0]} />
-            <button type='button'>Add</button>
-            <ul />
+            <input type='text' placeholder="To Do" onChange={inputHandler} value={todoName} />
+            <button type='button' onClick={todoListHandler}>Add</button>
+            <ul>
+                {todoList.map(todo => <li key={todo}>{todo}</li>)}
+            </ul>
         </div>
     );
 };
