@@ -17,7 +17,10 @@ const ToDo = (props) => {
                 }
                 setTodoList(todo);
             });
-    }, []);
+        return () => {
+            console.log("clean up");
+        }
+    }, [todoName]);
 
     const inputHandler = event => {
         setTodoName(event.target.value);
