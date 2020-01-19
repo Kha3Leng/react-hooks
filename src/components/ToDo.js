@@ -4,6 +4,7 @@ import axios from 'axios';
 const ToDo = (props) => {
     const [todoName, setTodoName] = useState('');
     const [todoList, setTodoList] = useState([]);
+    const [shit, setShit] = useState(null);
 
     useEffect(() => {
         axios.get('https://to-do-81153.firebaseio.com/todo.json')
@@ -26,10 +27,20 @@ const ToDo = (props) => {
         setTodoName(event.target.value);
     };
 
+    useEffect(() => {
+        if (shit)
+            setTodoList(todoList.concat(shit));
+    }, [shit]);
+
     const todoListHandler = _ => {
-        setTodoList(todoList.concat(todoName));
+
         axios.post('https://to-do-81153.firebaseio.com/todo.json', { name: todoName })
-            .then(res => console.log(res))
+            .then(res => {
+                console.log(res);
+                setTimeout(() => setShit({ id: res.data.name, name: todoName },
+                    3000)
+                );
+            })
             .catch(err => console.log(err));
     };
 
