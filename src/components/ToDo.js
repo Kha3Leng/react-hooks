@@ -17,7 +17,7 @@ const ToDo = (props) => {
                 }
                 setTodoList(todo);
             });
-    });
+    }, []);
 
     const inputHandler = event => {
         setTodoName(event.target.value);
