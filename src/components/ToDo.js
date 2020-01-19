@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const ToDo = (props) => {
     const [todoName, setTodoName] = useState('');
@@ -10,6 +11,9 @@ const ToDo = (props) => {
 
     const todoListHandler = _ => {
         setTodoList(todoList.concat(todoName));
+        axios.post('https://to-do-81153.firebaseio.com/todo.json', { todo: todoName })
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
     };
 
     return (
