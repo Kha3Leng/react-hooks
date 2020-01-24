@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
+import List from './List';
+
 const ToDo = (props) => {
-    const [todoName, setTodoName] = useState('');
+    const [valid, setValid] = useState(false);
+    // const [todoName, setTodoName] = useState('');
     // const [todoList, setTodoList] = useState([]);
     // const [shit, setShit] = useState(null);
     const todoListReducer = (state, action) => {
@@ -19,9 +22,11 @@ const ToDo = (props) => {
     };
 
     const [todoList, dispatch] = useReducer(todoListReducer, []);
+    const todoInputRef = useRef();
 
 
     useEffect(() => {
+
         axios.get('https://to-do-81153.firebaseio.com/todo.json')
             .then(res => {
                 console.log(res);
@@ -36,11 +41,11 @@ const ToDo = (props) => {
         return () => {
             console.log("clean up");
         }
-    }, [todoName]);
+    }, []);
 
-    const inputHandler = event => {
-        setTodoName(event.target.value);
-    };
+    // const inputHandler = event => {
+    //     setTodoName(event.target.value);
+    // };
 
 
 
@@ -50,6 +55,7 @@ const ToDo = (props) => {
     // }, [shit]);
 
     const todoListHandler = _ => {
+        const todoName = todoInputRef.current.value;
         axios.post('https://to-do-81153.firebaseio.com/todo.json', { name: todoName })
             .then(res => {
                 console.log(res);
@@ -68,20 +74,30 @@ const ToDo = (props) => {
         axios.delete(`https://to-do-81153.firebaseio.com/${todoId}.json`)
             .then(res => {
                 dispatch({ type: 'REMOVE', payload: todoId });
-                console.log(`https://to-do-81153.firebaseio.com/${todoId}.json`);
+
             })
             .catch(err => console.log(err));
     };
 
+    const inputValidationHandler = event => {
+        if (event.target.value.trim() === '')
+            setValid(false);
+        else
+            setValid(true);
+    };
+
     return (
         <div>
-            <input type='text' placeholder="To Do" onChange={inputHandler} value={todoName} />
+            <input type='text' placeholder="To Do" ref={todoInputRef}
+                onChange={inputValidationHandler}
+                style={{
+                    backgroundColor: valid ? 'transparent' : 'red'
+                }} />
+
             <button type='button' onClick={todoListHandler}>Add</button>
-            <ul>
-                {todoList.map(todo => <li
-                    key={todo.id}
-                    onClick={todoListRemovedHandler.bind(this, todo.id)}>{todo.name}</li>)}
-            </ul>
+            {useMemo(
+                () => <List todoList={todoList} onClick={todoListRemovedHandler} />,
+                [todoList])}
         </div>
     );
 };
