@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useRef, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
+import { useInputValidity } from '../Hooks/inputValidity';
 import List from './List';
 
 const ToDo = (props) => {
-    const [valid, setValid] = useState(false);
+    // const [valid, setValid] = useState(false);
     // const [todoName, setTodoName] = useState('');
     // const [todoList, setTodoList] = useState([]);
     // const [shit, setShit] = useState(null);
@@ -22,7 +23,8 @@ const ToDo = (props) => {
     };
 
     const [todoList, dispatch] = useReducer(todoListReducer, []);
-    const todoInputRef = useRef();
+    // const todoInputRef = useRef();
+    const todoInput = useInputValidity();
 
 
     useEffect(() => {
@@ -55,7 +57,7 @@ const ToDo = (props) => {
     // }, [shit]);
 
     const todoListHandler = _ => {
-        const todoName = todoInputRef.current.value;
+        const todoName = todoInput.value;
         axios.post('https://to-do-81153.firebaseio.com/todo.json', { name: todoName })
             .then(res => {
                 console.log(res);
@@ -79,19 +81,19 @@ const ToDo = (props) => {
             .catch(err => console.log(err));
     };
 
-    const inputValidationHandler = event => {
-        if (event.target.value.trim() === '')
-            setValid(false);
-        else
-            setValid(true);
-    };
+    // const inputValidationHandler = event => {
+    //     if (event.target.value.trim() === '')
+    //         setValid(false);
+    //     else
+    //         setValid(true);
+    // };
 
     return (
         <div>
-            <input type='text' placeholder="To Do" ref={todoInputRef}
-                onChange={inputValidationHandler}
+            <input type='text' placeholder="To Do"
+                onChange={todoInput.onChange}
                 style={{
-                    backgroundColor: valid ? 'transparent' : 'red'
+                    backgroundColor: todoInput.validity ? 'transparent' : 'red'
                 }} />
 
             <button type='button' onClick={todoListHandler}>Add</button>
